@@ -12,11 +12,11 @@ const loadItems = () => {
     items = JSON.parse(data);
   } catch (err) {
     console.error("Error reading items.json:", err);
-    items = []; // fallback to an empty array if reading fails
+    items = []; 
   }
 };
 
-loadItems(); // Load the items when the app starts
+loadItems(); 
 
 // Save items to items.json
 const saveItems = () => {
@@ -49,7 +49,7 @@ const addItemController = (req, res) => {
     return res.status(400).json({ message: error.details[0].message });
   }
 
-  // Ensure unique ID (handle the case when the items list is empty)
+  // Ensure unique ID 
   const newItem = {
     id: items.length ? items[items.length - 1].id + 1 : 1,
     ...data,
