@@ -6,7 +6,9 @@ import 'package:http/http.dart' as http;
 enum Method { get, post, delete }
 
 class ApiRoute {
-  static const String baseUrl = 'http://192.168.29.111:3001/api/';
+  // static const String baseUrl = 'http://192.168.29.111:3001/api/';
+  // static const String baseUrl = 'http://127.0.0.1:3001/api/';
+  static const String baseUrl = 'http://192.168.155.106:3001/api/';
   static const String item = 'items';
 }
 
@@ -25,7 +27,7 @@ class ApiCall {
     try {
       final response = await http.get(Uri.parse(url), headers: {
         'Content-Type': 'application/json',
-      });
+      }).timeout(const Duration(seconds: 10));
       final resJson = jsonDecode(response.body);
       if (kDebugMode) {
         print(resJson);
@@ -44,11 +46,13 @@ class ApiCall {
       print(url);
     }
     try {
-      final response = await http.post(Uri.parse(url),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: jsonEncode(body));
+      final response = await http
+          .post(Uri.parse(url),
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: jsonEncode(body))
+          .timeout(const Duration(seconds: 10));
       final resJson = jsonDecode(response.body);
       if (kDebugMode) {
         print(resJson);
@@ -68,7 +72,7 @@ class ApiCall {
     try {
       final response = await http.delete(Uri.parse(url), headers: {
         'Content-Type': 'application/json',
-      });
+      }).timeout(const Duration(seconds: 10));
       final resJson = jsonDecode(response.body);
       if (kDebugMode) {
         print(resJson);

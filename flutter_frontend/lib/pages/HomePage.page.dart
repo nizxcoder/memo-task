@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_frontend/utils/api.dart';
 import 'package:flutter_frontend/utils/controller.dart';
 import 'package:flutter_frontend/utils/utils.dart';
@@ -19,7 +18,8 @@ class _HomePageState extends State<HomePage> {
   TextEditingController itemController = TextEditingController();
 
   List items = [];
-  bool loading = false;
+  bool isLoading = true;
+  bool buttonLoading = false;
 
   Future<void> fetchItems() async {
     try {
@@ -27,16 +27,19 @@ class _HomePageState extends State<HomePage> {
       if (mounted) {
         if (res.statusCode == 200) {
           appController.items.value = res.response as List;
-        } else {
+        } else if ([401, 403].contains(res.statusCode)) {
           showToast(message: res.response['message']);
         }
       }
     } catch (e) {
       showToast(message: e.toString());
     } finally {
-      setState(() {
-        loading = false;
-      });
+      Future.delayed(
+        const Duration(seconds: 1),
+        () => setState(() {
+          isLoading = false;
+        }),
+      );
     }
   }
 
@@ -56,7 +59,7 @@ class _HomePageState extends State<HomePage> {
       showToast(message: e.toString());
     } finally {
       setState(() {
-        loading = false;
+        buttonLoading = false;
         itemController.clear();
       });
     }
@@ -66,6 +69,7 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     super.dispose();
     appController.items.clear();
+    itemController.dispose();
   }
 
   @override
@@ -79,14 +83,18 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomInset: true,
         backgroundColor: Colors.white,
         appBar: AppBar(
-          forceMaterialTransparency: true,
+          elevation: 5,
+          surfaceTintColor: const Color.fromARGB(250, 255, 255, 255),
+          backgroundColor: const Color.fromARGB(250, 255, 255, 255),
+          shadowColor: const Color.fromARGB(75, 255, 255, 255),
           title: const Text('Memo'),
           actions: [
-            !loading
+            !buttonLoading
                 ? IconButton(
-                    onPressed: showAddItemModal,
+                    onPressed: () => showAddItemModal(context),
                     icon: const Icon(Icons.add),
                   )
                 : const SizedBox(
@@ -99,55 +107,76 @@ class _HomePageState extends State<HomePage> {
                   ),
           ],
         ),
-        body: Obx(
-          () => ListView(
-            children: [
-              ...appController.items.map((e) => ItemCard(data: e)),
-            ],
-          ),
+        body: Stack(
+          children: [
+            Obx(
+              () => ListView(
+                children: [
+                  ...appController.items.map((e) => ItemCard(data: e)),
+                ],
+              ),
+            ),
+            if (isLoading)
+              Container(
+                color: Colors.white,
+                height: MediaQuery.of(context).size.height,
+                child: const Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+                    strokeWidth: 2,
+                  ),
+                ),
+              ),
+          ],
         ));
   }
 
-  void showAddItemModal() {
-    showModalBottomSheet(
+  void showAddItemModal(BuildContext context) {
+    showDialog(
       context: context,
-      isScrollControlled: true,
       builder: (context) {
-        return Container(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                'Add Item',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          elevation: 4,
+          backgroundColor: Colors.white,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Add Item',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: itemController,
-                decoration: const InputDecoration(
-                  hintText: 'Enter item name',
+                const SizedBox(height: 20),
+                TextField(
+                  controller: itemController,
+                  decoration: const InputDecoration(
+                    hintText: 'Enter item name',
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              CustomButton(
-                text: 'Add',
-                backgroundColor: Colors.deepPurple,
-                textColor: Colors.white,
-                onPressed: () {
-                  setState(() {
-                    loading = true;
-                  });
-                  Future.delayed(const Duration(seconds: 2), () async {
-                    await addItem(itemController.text);
-                  });
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
+                const SizedBox(height: 20),
+                CustomButton(
+                  text: '    Add    ',
+                  backgroundColor: Colors.black,
+                  textColor: Colors.white,
+                  onPressed: () {
+                    setState(() {
+                      buttonLoading = true;
+                    });
+                    Future.delayed(const Duration(seconds: 1), () async {
+                      await addItem(itemController.text);
+                    });
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            ),
           ),
         );
       },
