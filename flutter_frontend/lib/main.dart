@@ -22,6 +22,7 @@ class MyApp extends StatelessWidget {
             secondary: Colors.black,
             primary: Colors.black),
         useMaterial3: true,
+        fontFamily: 'Poppins',
       ),
       home: const HomePage(),
     );

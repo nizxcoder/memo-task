@@ -31,7 +31,7 @@ class CustomButton extends StatelessWidget {
         ),
         padding: const EdgeInsets.symmetric(
           vertical: 10,
-          horizontal: 12,
+          horizontal: 14,
         ),
       ),
       label: !isLoading
@@ -43,12 +43,15 @@ class CustomButton extends StatelessWidget {
               ),
             )
           : const Center(
-              child: SizedBox(
-                height: 22,
-                width: 22,
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  strokeWidth: 2,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 28, vertical: 1),
+                child: SizedBox(
+                  height: 22,
+                  width: 22,
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    strokeWidth: 2,
+                  ),
                 ),
               ),
             ),

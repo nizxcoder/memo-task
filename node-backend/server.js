@@ -2,7 +2,7 @@ const app = require("express")();
 const bodyParser = require("body-parser");
 const fs = require("fs");
 const itemsRoutes = require("./routes/itemRoutes");
-const port = 3001;
+const port = 3000;
 
 app.use(bodyParser.json());
 

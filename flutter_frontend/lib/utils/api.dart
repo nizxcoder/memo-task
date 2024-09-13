@@ -1,14 +1,15 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
-enum Method { get, post, delete }
-
 class ApiRoute {
-  // static const String baseUrl = 'http://192.168.29.111:3001/api/';
-  // static const String baseUrl = 'http://127.0.0.1:3001/api/';
-  static const String baseUrl = 'http://192.168.155.106:3001/api/';
+  static const String baseUrl = 'http://192.168.29.111:3000/api/';
+
+  // if you are using emulator or physical device, use the below baseUrl
+  // static const String baseUrl = 'http://your_ip_address:3000/api/';
+
   static const String item = 'items';
 }
 
@@ -22,28 +23,39 @@ class ApiResponse {
 class ApiCall {
   Future<ApiResponse> getReq({required String url}) async {
     if (kDebugMode) {
-      print(url);
+      print('Requesting GET: $url');
     }
     try {
       final response = await http.get(Uri.parse(url), headers: {
         'Content-Type': 'application/json',
       }).timeout(const Duration(seconds: 10));
+
       final resJson = jsonDecode(response.body);
-      if (kDebugMode) {
-        print(resJson);
-      }
       return ApiResponse(statusCode: response.statusCode, response: resJson);
+    } on SocketException {
+      return ApiResponse(statusCode: 503, response: {
+        "message": "No internet connection. Please check your network."
+      });
+    } on TimeoutException {
+      return ApiResponse(
+          statusCode: 408,
+          response: {"message": "Request timed out. Please try again later."});
+    } on HttpException {
+      return ApiResponse(statusCode: 404, response: {
+        "message":
+            "Could not reach the server. Please check your URL or server status."
+      });
     } catch (e) {
       return ApiResponse(
-          statusCode: e is HttpResponse ? e.statusCode : 500,
-          response: e.toString());
+          statusCode: 500,
+          response: {"message": "Something went wrong: ${e.toString()}"});
     }
   }
 
   Future<ApiResponse> postReq(
       {required String url, required Map<String, dynamic> body}) async {
     if (kDebugMode) {
-      print(url);
+      print('Requesting POST: $url');
     }
     try {
       final response = await http
@@ -53,35 +65,57 @@ class ApiCall {
               },
               body: jsonEncode(body))
           .timeout(const Duration(seconds: 10));
+
       final resJson = jsonDecode(response.body);
-      if (kDebugMode) {
-        print(resJson);
-      }
       return ApiResponse(statusCode: response.statusCode, response: resJson);
+    } on SocketException {
+      return ApiResponse(statusCode: 503, response: {
+        "message": "No internet connection. Please check your network."
+      });
+    } on TimeoutException {
+      return ApiResponse(
+          statusCode: 408,
+          response: {"message": "Request timed out. Please try again later."});
+    } on HttpException {
+      return ApiResponse(statusCode: 404, response: {
+        "message":
+            "Could not reach the server. Please check your URL or server status."
+      });
     } catch (e) {
       return ApiResponse(
-          statusCode: e is HttpResponse ? e.statusCode : 500,
-          response: e.toString());
+          statusCode: 500,
+          response: {"message": "Something went wrong: ${e.toString()}"});
     }
   }
 
   Future<ApiResponse> deleteReq({required String url}) async {
     if (kDebugMode) {
-      print(url);
+      print('Requesting DELETE: $url');
     }
     try {
       final response = await http.delete(Uri.parse(url), headers: {
         'Content-Type': 'application/json',
       }).timeout(const Duration(seconds: 10));
+
       final resJson = jsonDecode(response.body);
-      if (kDebugMode) {
-        print(resJson);
-      }
       return ApiResponse(statusCode: response.statusCode, response: resJson);
+    } on SocketException {
+      return ApiResponse(statusCode: 503, response: {
+        "message": "No internet connection. Please check your network."
+      });
+    } on TimeoutException {
+      return ApiResponse(
+          statusCode: 408,
+          response: {"message": "Request timed out. Please try again later."});
+    } on HttpException {
+      return ApiResponse(statusCode: 404, response: {
+        "message":
+            "Could not reach the server. Please check your URL or server status."
+      });
     } catch (e) {
       return ApiResponse(
-          statusCode: e is HttpResponse ? e.statusCode : 500,
-          response: e.toString());
+          statusCode: 500,
+          response: {"message": "Something went wrong: ${e.toString()}"});
     }
   }
 
