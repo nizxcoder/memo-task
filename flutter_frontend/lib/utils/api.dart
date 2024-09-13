@@ -5,10 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class ApiRoute {
-  static const String baseUrl = 'http://192.168.29.111:3000/api/';
-
-  // if you are using emulator or physical device, use the below baseUrl
-  // static const String baseUrl = 'http://your_ip_address:3000/api/';
+  // change this to your server IP address
+  static const String baseUrl = 'http://your_ip_address:3000/api/';
 
   static const String item = 'items';
 }

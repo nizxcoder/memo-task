@@ -59,7 +59,6 @@ class _ItemCardState extends State<ItemCard> {
     );
   }
 
-// Function to show the delete confirmation dialog
   void _showDeleteConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -132,7 +131,6 @@ class _ItemCardState extends State<ItemCard> {
   }
 
   void _deleteItem() async {
-    // Delete item API call
     try {
       final res = await ApiCall().deleteItem(itemId: widget.data['id']);
       if (res.statusCode == 200) {
