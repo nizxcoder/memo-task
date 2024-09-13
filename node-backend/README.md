@@ -19,15 +19,3 @@ Before getting started, make sure you have the following installed on your machi
 
 1. Run `npm start` to start the Node.js server.
 2. The server will be running on `http://localhost:3000` or `http://127.0.0.1:3000`.
-
-## API Documentation
-
-For detailed information on the available API endpoints, refer to the [API documentation](/docs/api.md).
-
-## Contributing
-
-If you would like to contribute to this project, please follow the guidelines outlined in [CONTRIBUTING.md](/docs/CONTRIBUTING.md).
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
